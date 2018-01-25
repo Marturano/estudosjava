@@ -1,0 +1,524 @@
+--AULA 1
+
+--     GRUPO DE COMANDOS: DDL /DML /DCL /DQL.
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+--AULA 2
+
+--int (numeros inteiros).
+--char (carcteres de tamanho fixo | 10 é 10).
+--varchar (caracteres de tamanho variável | 10 pode ser 6).
+--real (númreos quebrados).
+--date (data apenas).
+--money (dados monetários).
+--text (caracteres de tamanho variável).
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+--AULA 3
+
+create database db_Biblioteca
+on primary(
+name= db_Biblioteca, 								--nome dados ao banco de dados.
+filename='C:\SQL\DB_BIBLIOTECA.MDF', 				--caminho do banco de dados.
+size=6MB,											
+maxsize=15MB,										--tamanho máximo do banco de dados.
+filegrowth=10%										
+)
+
+
+use db_Biblioteca 									--indica qual banco usar.				
+sp_helpdb db_biblioteca 							--informa tamanho, taxa de crescimento, e local do banco.
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+--AULA 4
+
+--						SQL Constrains/Constraints (restrições).
+
+--						> not null(campo obrigatório, sempre digitar informação).
+--						> unique (informação não se repete).
+--						> primary key (chave primária, única em cada resgistro).
+--						> foreign key (aponta para chave pk_ de outra tabela).
+--						> check (limita valores na coluna, apenas o que for definido para ser inserido na coluna).
+-- 						> default (insere um valor padrão).
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+--AULA 5
+
+--Criar tabelas.
+-- dbo= data base object.
+
+sp_help tbl_Livro 								--informa os índices, chaves e campos, atributos e tipos de atributoas de uma tabela.
+sp_help tbl_autores								--informa os índices, chaves e campos, atributos e tipos de atributoas de uma tabela.
+sp_help tbl_editoras							--informa os índices, chaves e campos, atributos e tipos de atributoas de uma tabela.
+
+
+
+use db_Biblioteca
+create table tbl_Livro
+	(ID_Livro smallint primary key identity(100,1),
+	Nome_Livro varchar (50) not null,
+	ISBN varchar(30) not null unique,
+	ID_Autor smallint not null,
+	Data_Pub datetime not null,
+	Preco_Livro money not null)
+
+
+use db_Biblioteca
+create table tbl_autores 
+	(ID_Autor smallint primary key,
+	Nome_Autor varchar(50),
+	sobrenome_Autor varchar (60))
+
+
+use db_Biblioteca
+create table tbl_editoras
+	(ID_Editora smallint primary key identity,
+	Nome_Editrora varchar(50) not null)
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+--AULA 6
+
+--IDENTITY (inser automaticamente um número quando um novo resgistro é feito, sem precisar fazer manualmente).
+
+
+create table tbl_teste_identidade
+	(ID_Teste smallint primary key identity,
+	valor smallint not null)
+
+
+select *from tbl_teste_identidade
+
+insert into tbl_teste_identidade (valor) values (10)   		--coluna 'valor' vai ter um valor adicionado automaticamente, pois foi colocada como identity, e gerando valor apartir de '1'.
+insert into tbl_teste_identidade (valor) values (20)
+insert into tbl_teste_identidade (valor) values (30)
+insert into tbl_teste_identidade (valor) values (40)
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+		
+
+--AULA 7
+
+--comando para alterar a tabela.
+alter table tbl_Livro
+drop column ID_Autor
+--drop é usado para excluir objetos
+
+--para excluir uma constraint.
+alter table tbl_Livro
+drop constraint 'nome_constraint'
+
+
+
+--criar uma fk_ e mostrar a quem se refere.
+alter table tbl_Livro
+add ID_Autor smallint not null
+constraint fk_ID_Autor foreign key (ID_Autor)
+references tbl_autores
+
+alter table tbl_Livro
+add ID_Editora smallint not null
+constraint fk_ID_editora foreign key (ID_Editora)
+references tbl_editoras
+
+
+
+--certa coluna recebe constraint e passa a ser pk_.
+--OBS: A coluna ID_Cliente já deve existir para isso.
+alter table clientes
+add primary key (ID_CLiente)
+
+
+
+--excluir tabela usando o comando drop.
+--Olhar se tem relacionamentos, excluir parte por parte.
+drop table 'nome_tabela'
+--usar o use antes para selecionar a biblioteca.
+--EX: drop table 'Clientes'
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+--AULA 8
+
+--inserir dados   ##EX: insert into 'nome databela'(coluna1, coluna2,..) values(valor1, valor2,... )##.
+
+--EX: 
+insert into tbl_autores (ID_Autor, Nome_Autor, sobrenome_Autor) values(1,'Daniel','Barret')
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+--AULA 9
+
+--    #TRUNCATE TABLE.
+--EX:
+
+use test
+select * from tbl_Livro
+--após olhar os registro.
+
+--pode ser usado o comando TRUNCATE TABLE.
+select count(*) from tbl_Livro
+-- count para ver a contagem dos registros.
+
+truncate table tbl_Livro
+--apaga os registros.	
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+--AULA 10
+
+--Consulta Simples.
+select 'coluna' from 'tabela'
+
+--EX:
+select Nome_Autor from tbl_autores 
+
+--selecionar mais de um item em uma tabela.
+select Nome_Autor, ID_Autor from tbl_autores 
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+--AULA 11
+
+--   #ORDER BY.
+--usado para ordenar o conjunto/resultado de registros.
+
+--ORDEM: ASC (Ordem ascendente)  -normal.
+--ORDEM: DESC (Ordem descendente) -inversa.
+
+select 'coluna' from 'tabela'
+order by 'coluna a ordenar'
+
+--EX:
+select * from tbl_Livro order by Nome_Livro
+--mostra os dados da tabela em ASC.
+
+select * from tbl_Livro order by Nome_Livro desc
+---para inverter.
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+--AULA 12
+
+--  #select distinct.
+--algumas colunas podem ter valores duplicados. para exibir valores diferentes devemos usar "distinct".
+
+select distinct 'colunas' 
+from 'tabela'
+
+--EX:
+select distinct ID_Autor 
+from tbl_Livro
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+--AULA 13
+
+--   #Cláusula where.
+--permite filtrar registros em um consulta.
+
+select 'colunas' from 'tabela'
+where 'coluna'='valor'
+--vai procurar certa coluna dentro de uma tabela.
+
+--EX:
+select ID_Autor from tbl_autores
+where sobrenome_Autor = 'Stanek'
+--nome da tabela e valor a procurar.
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+--AULA 14
+
+--  #operador AND e OR.
+--AND: mostra um registro se ambas as condições forem verdadeiras.  		- 1 e 2
+--OR: mostra um registro se pelo menos uma das condições for verdadeiras.	- 1 ou 2
+
+--EX:
+select * from tbl_Livro
+where ID_Livro > 2 and ID_Autor < 3 
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+--NEW COMANDO
+
+--	#update
+--para atualizar algum dado na tabela.
+
+update 'tabela'
+set 'coluna a alterar' = 'valor'
+where 'linha a ser modificada' = 'valor'
+
+--EX:
+update tbl_Livro
+set Preco_Livro = 65.45
+where ID_Livro = 102
+--vírgula é usada quando quer alterar mais de um item.
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+--AULA 15
+
+--  #select top.
+--especifica o número de registros a retornar (útil para tabelas com muitos registros).
+
+select top 'numero' 'colunas'
+from 'tabela'
+
+--EX:
+select top 10 Nome_Livro
+from tbl_Livro
+-- 10 = aos dez primeiros registros da tabela.
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+--AULA 16
+
+--	#AS
+--muda o nome da coluna.
+
+select 'coluna'
+as 'novo nome da coluna'
+from 'tabela'
+
+--EX:
+select Nome_Livro
+as Livro
+from tbl_Livro
+--coluna selecionada tera seu nome alterado pelo comando 'AS'.
+
+--EX:
+select Nome_Livro
+as Livro, ID_Autor as Autor
+from tbl_Livro
+--selecionar mais de uma coluna e alterar.
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+--AULA 17
+
+--	#union
+--combina duas ou mais declarações de 'select'.
+--combina temporariamente.
+
+select 'coluna' from 'tabela1'
+union
+select 'coluna' from 'tabela2'
+-- selecionar a coluna e depois a tabela que serão combinadas.
+
+--EX:
+select ID_Autor from tbl_autores
+union 
+select ID_Autor from tbl_Livro
+
+-- 'union all' mostra todos os itens com as repetições.
+-- 'union' sem o 'all' mostra os itens individuais, sem repetir.
+
+
+--EX:
+select ID_Autor from tbl_autores
+union
+select ID_Livro from tbl_Livro
+--para juntar todos os dados selecionados em uma única tabela.
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+--AULA 18
+
+--	#select into
+--junta e cria uma nova tabela com outros dados selecionados.
+
+select 'coluna'
+into 'nova tabela'
+from 'tabela atual'
+
+--EX:
+select ID_Livro Nome_Livro, ISBN
+into Livro_ISBN
+from tbl_Livro
+where ID_Livro > 2
+
+
+--criar backup de uma tabela.
+select * from tbl_Livro_backup
+select * from tbl_Livro
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+--AULA 19
+
+--					FUNÇÕES AGREGADAS:
+--					-> min = valor mínimo.
+--					-> max = valor máximo.
+--					-> avg = média aritmética.
+--					-> sum = total(soma).
+--					-> count = contar quantidades de itens.
+
+
+--EX:
+select count(*) from tbl_autores
+--contagem dos dados.
+
+
+select max(Preco_Livro) from tbl_Livro
+--traz o valor máximo da coluna que for colocada entre parênteses.
+
+
+select min(Preco_Livro) from tbl_Livro
+--traz o valor mínimo da coluna que for colocada entre parênteses.
+
+
+select avg(Preco_Livro) from tbl_Livro
+--faz a média aritmética, calcula a média.
+
+
+select sum(Preco_Livro) from tbl_Livro
+--somatória de todos os preços.
+
+
+--EX:
+select 'função'('coluna') as 'nome a dar' from 'tabela'
+--'AS' da nome ao resultado final.
+
+select sum(Preco_Livro) as PreçoTotal from tbl_Livro
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+--AULA 20
+
+-- 	#BETWEEN
+--Usado para selecionar dados entre valores.
+
+-- 				operadores lógicos:
+--   			 -> between
+--   			 -> and
+
+
+select 'coluna' from 'tabela'
+--ver os dados
+
+where 'coluna' between 'valor1' and 'valor2'
+--procurar os dados entre um intervalo de tempo.
+--EX: entre 50 e 60.
+
+
+-- AS já muda o nome e between ja procura entre o intervalo de 40 a 60.
+select Nome_Livro as Livro, Preco_Livro as preços
+from tbl_Livro
+where Preco_Livro between 40.00 and 60.00
+--between procura o valor entre 40 e 60.
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+--AULA 21
+
+--  		Operadores:
+-- 			 -> like
+--  		 -> not like
+
+--usado juntocom a clásula 'where'
+
+
+-- 		like - padrões específicos:
+
+--			% = cadeia de 0 ou mais caracteres, não importa o que vem depois ou antes.
+
+--   		_ = qualquer caracter único, mostra qual caracter importa ou não.
+
+-- 			[] = caracter único no intervalo ou conunto específico (a-h; aeiou).
+
+--			[^] = caracter único que não esteja no intervalo ou conjunto específico (a-h; aeiou).
+
+
+
+select Nome_Livro
+from tbl_Livro
+where Nome_Livro like '%s' --cadeia de de 0 ou mais antes do 'S'.
+
+where Nome_Livro like 's% ' -- '_' não importa a primeira letra e '%' não importa as demais.
+
+where Nome_Livro not like 's' -- trás todos os 'livros' menos o que contem a letra 'S'.
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+-- AULA 22
+
+--	#joins
+--obter dados de duas ou mais tabelas.
+
+-------- INNER JOIN: retorna quando estiver pelo menos uma correspondência.
+select 'colunas'
+from 'tabela1'
+inner join 'tabela2'
+on 'tabela1'.'coluna' = 'tabela2'.'coluna'
+
+--EX: usando inner join e '.' para coluna específica.
+select * from tbl_Livro
+inner join tbl_autores
+on tbl_Livro.ID_Autor = tbl_autores.ID_Autor
+
+--EX2:
+select tbl_Livro.Nome_Livro, tbl_Livro.ISBN, tbl_autores.Nome_Autor   -- O ponto '.' específica a coluna da tabela.
+from tbl_Livro
+inner join tbl_autores
+on tbl_Livro.ID_Autor = tbl_autores.ID_Autor
+
+
+-------- USANdo Aliases
+--EX:
+select L.Nome_Livro, E.Nome_Editrora  
+from tbl_Livro as L
+inner join tbl_editoras as E
+on L.ID_Editora = E.ID_Editora
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+--AULA 23 e 24
+
+-- #joins
+-- OUTER JOINS -> LEFT /RIGHT /FULL.
+
+
+------- OUTER JOIN: retorna mesmo que não tenha nada cadastrado.
+
+
+------- LEFT JOIN: retorna todas as linhas da tabela à esquerda, mesmo se não houver nenhuma correspondência na tabela à direita.
+where tbl_Livro.ID_Autor is null --> quando quiser seelcionar um tipo de dado dentro da tabela, usamos a cláusula 'where'.
+
+
+------- RIGHT JOIN: retorna todas as linhas da tabela à direita, mesmo se não houver nenhuma correspondência na tabela à esquerda.
+
+
+------- FULL JOIN: retorna linhas quando houver u,a correspondência em qualquer uma das tabelas. É uma combinação de todos.
+--> FULL JOIN inclui todos os dados.
+
+
+
+--EX:
+select * from tbl_Livro
+left join tbl_autores
+on tbl_Livro.ID_Autor = tbl_autores.ID_Autor
+where tbl_autores.ID_Autor is null
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+--AULA 25
+
+-- #operadores IN e NOT IN.
+
+--determina se um determinado valor corresponde a qualquer valor em uma subconsulta ou lista.
+--retorna sempre true ou false.
+
+--EX:
+select * from tbl_Livro
+where ID_Autor in (1, 2)
+--vai mostrar a linha completa da coluna que tiver 1 e 2, e assim sucessivamente com demais dados postos entre o parênteses.
+
+--EX2:
+select * from tbl_Livro
+where ID_Autor not in (1, 2)
+--mostra apenas as linhas que sua coluna não tenha 1 e 2, e assim sucessivamente com demais dados postos entre o parênteses.
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

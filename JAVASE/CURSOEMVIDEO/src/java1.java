@@ -1,4 +1,4 @@
-package javaOne;
+package javaO;
 
 public class js1 {
 
